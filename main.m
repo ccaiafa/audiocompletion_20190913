@@ -13,14 +13,14 @@ Mask  = ones(size(IM));
 indices = randperm(prod(size(IM)));
 Mask(indices(1:round(prod(size(IM))*0.1))) = 0;
 
-
-
 % sparsity
 sparsity = 0.1;
 
 % Call CesarTC completion algorithm
 disp('Completing tensor')
 [IMrec] = CesarTC(IM,Mask,ps,D0,sparsity);
+
+
 
 
 

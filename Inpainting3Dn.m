@@ -90,7 +90,7 @@ while (error > epsilon) && (p <= P)
     R = R.*Mask;
     error = norm(R(:),'fro')/norma;
     
-    if displaymode == 'show'
+    if displaymode == 'sishow'
         PSNR = 20*log10(max(I0(:))/sqrt(mean((I0(:) - Yap(:)).^2))); 
         disp(['Error=',num2str(error),', p=',num2str(p),', sparsity=',num2str(p/prod(I)),', PSNR=',num2str(PSNR)])
     end
