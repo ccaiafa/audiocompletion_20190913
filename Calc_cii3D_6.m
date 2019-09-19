@@ -1,8 +1,8 @@
 function [cii] = Calc_cii3D_6(D1,D2,D3,Mask)
 %#codegen
-I1 = size(D1,1);
-I2 = size(D2,1);
-I3 = size(D3,1);
+I1 = size(D1,2);
+I2 = size(D2,2);
+I3 = size(D3,2);
 %cii = zeros(I1*I2*I3,1);
 cii = zeros(I1,I2,I3);
 

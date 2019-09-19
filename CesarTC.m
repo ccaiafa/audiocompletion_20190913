@@ -15,13 +15,13 @@ IMrec = zeros(size(IM));
 COUNT = zeros(size(IM));
 % patch dimensions
 %I = [ps,ps,ps];
-I = ps
+I = ps;
 epsilon = 0.055;
 end1 = IS(1)-I(1)+1;
 end2 = IS(2)-I(2)+1;
 end3 = IS(3)-I(3)+1;
 
-iter = 1;
+iter = 0;
 for i1 = 1:1:end1  
     for i2 = 1:1:end2
         for i3 = 1:1:end3
@@ -38,7 +38,7 @@ for i1 = 1:1:end1
             mag =400;
             iter = iter + 1;
         end
-        strcat('iter :', num2str(iter),' of :', num2str(end1*end2*end3))
+        disp(['iter ', num2str(iter),' of ', num2str(end1*end2*end3)])
     end
 end
 IMrec = IMrec./COUNT;

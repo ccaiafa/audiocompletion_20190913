@@ -5,6 +5,7 @@ function [Yap, X] = Inpainting3Dn(I0, Mask, D0, epsilon,sparsity,displaymode)
 % L: multiresolution levels
 
 I = size(I0);
+ID = [size(D0{1},2),size(D0{2},2),size(D0{3},2)];
 ind1 = zeros(prod(I),1);
 ind2 = zeros(prod(I),1);
 ind3 = zeros(prod(I),1);
@@ -13,8 +14,9 @@ selind = find(Mask);
 K = length(selind);
 [ind1(1:K),ind2(1:K),ind3(1:K)] = ind2sub(I,selind);
 
+cii = Calc_cii3D(D0{1},D0{2},D0{3},Mask);
 %cii = Calc_cii3D_4_mex(D0{1},D0{2},D0{3},Mask);
-cii = Calc_cii3D_6(D0{1},D0{2},D0{3},Mask);
+%cii = Calc_cii3D_6(D0{1},D0{2},D0{3},Mask);
 % cii = Calc_cii3D_8_mex(D0{1},D0{2},D0{3},Mask);
 %cii = Calc_cii3D_16_mex(D0{1},D0{2},D0{3},Mask);
 %cii = Calc_cii3D_32_mex(D0{1},D0{2},D0{3},Mask);
@@ -53,7 +55,7 @@ while (error > epsilon) && (p <= P)
     %PROJ = abs(D0{1}'*R*D0{2});
     PROJ = abs(double(ttensor(tensor(R),D0{1}',D0{2}',D0{3}')));
     [value,i] = max(PROJ(:)./cii);
-    [i1(p),i2(p),i3(p)] = ind2sub(I,i);
+    [i1(p),i2(p),i3(p)] = ind2sub(ID,i);
     
     %w = full(D0{1}(ind1(1:K),i1(p)).*D0{2}(ind2(1:K),i2(p)));
     w = full(D0{1}(ind1(1:K),i1(p)).*D0{2}(ind2(1:K),i2(p)).*D0{3}(ind3(1:K),i3(p)));
@@ -64,8 +66,9 @@ while (error > epsilon) && (p <= P)
         v(1,1) = TENV(i1(p),i2(p),i3(p));
         
     else
+        b = Calc_CrossCorr3D(D0{1},D0{2},D0{3},i1,i2,i3,p,Mask);
         %b = Calc_CrossCorr3D_4_mex(D0{1},D0{2},D0{3},i1,i2,i3,p,Mask);  
-         b = Calc_CrossCorr3D_6(D0{1},D0{2},D0{3},i1,i2,i3,p,Mask);  
+        %b = Calc_CrossCorr3D_6(D0{1},D0{2},D0{3},i1,i2,i3,p,Mask);  
         %b = Calc_CrossCorr3D_8_mex(D0{1},D0{2},D0{3},i1,i2,i3,p,Mask);  
         %b = Calc_CrossCorr3D_16_mex(D0{1},D0{2},D0{3},i1,i2,i3,p,Mask);  
         %b = Calc_CrossCorr3D_32_mex(D0{1},D0{2},D0{3},i1,i2,i3,p,Mask); 
@@ -79,7 +82,7 @@ while (error > epsilon) && (p <= P)
         lambda = Zinv*v(1:p,1);
     end
         
-    X = sptensor([i1(1:p)',i2(1:p)',i3(1:p)'],lambda,I);
+    X = sptensor([i1(1:p)',i2(1:p)',i3(1:p)'],lambda,ID);
     %Yap = full(D0{1}*X*D0{2}');
     Yap = double(ttensor(X,D0{1},D0{2},D0{3}));
     
@@ -87,7 +90,7 @@ while (error > epsilon) && (p <= P)
     R = R.*Mask;
     error = norm(R(:),'fro')/norma;
     
-    if displaymode == 'sishow'
+    if displaymode == 'show'
         PSNR = 20*log10(max(I0(:))/sqrt(mean((I0(:) - Yap(:)).^2))); 
         disp(['Error=',num2str(error),', p=',num2str(p),', sparsity=',num2str(p/prod(I)),', PSNR=',num2str(PSNR)])
     end
